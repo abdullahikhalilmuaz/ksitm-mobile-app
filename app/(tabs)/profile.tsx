@@ -15,7 +15,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import QRCode from "react-native-qrcode-svg";
 
-const API_URL = "https://ksitm-backend-api.onrender.com/api";
+const API_URL = "http://localhost:5000/api";
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -159,7 +159,7 @@ export default function ProfileScreen() {
 
           <TouchableOpacity
             style={styles.menuItem}
-            onPress={() => router.push("/(tabs)/history")}
+            onPress={() => router.push("/history")}
           >
             <Ionicons name="book-outline" size={22} color="#4B2E83" />
             <Text style={styles.menuText}>Borrowing History</Text>
@@ -173,7 +173,7 @@ export default function ProfileScreen() {
 
           <TouchableOpacity
             style={styles.menuItem}
-            onPress={() => router.push("/(tabs)/notifications")}
+            onPress={() => router.push("/notification")}
           >
             <Ionicons name="notifications-outline" size={22} color="#4B2E83" />
             <Text style={styles.menuText}>Notifications</Text>

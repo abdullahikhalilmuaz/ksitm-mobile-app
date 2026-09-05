@@ -1,10 +1,10 @@
 {
   "expo": {
     "name": "KSITM Library App",
-    "slug": "ksitm-library-app",
+    "slug": "myUmyu",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/umyu.png",
+    "icon": "./assets/images/favicon.webp",
     "scheme": "ksitm-library-app",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,

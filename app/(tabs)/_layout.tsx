@@ -86,6 +86,19 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: "Profile",
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons
+              name={focused ? "person" : "person-outline"}
+              size={size}
+              color={color}
+            />
+          ),
+        }}
+      />
     </Tabs>
   );
 }
@@ -94,28 +107,33 @@ const styles = StyleSheet.create({
   tabBar: {
     position: "absolute",
     bottom: 20,
-    left: 20,
-    right: 20,
-    borderRadius: 24,
-    height: 70,
-    paddingBottom: 8,
-    paddingTop: 8,
+    left: 12,
+    right: 12,
+    borderRadius: 30,
+    height: 65,
+    paddingBottom: 6,
+    paddingTop: 6,
+    paddingHorizontal: 2,
     backgroundColor: "rgba(255,255,255,0.7)",
     borderTopWidth: 0,
     shadowColor: "#4B2E83",
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 8,
+    shadowOpacity: 0.25,
+    shadowRadius: 20,
+    elevation: 12,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.3)",
     ...Platform.select({
       ios: {
-        borderWidth: 1,
-        borderColor: "rgba(255,255,255,0.2)",
+        shadowColor: "#4B2E83",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 20,
       },
     }),
   },
   tabLabel: {
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: "500",
   },
 });

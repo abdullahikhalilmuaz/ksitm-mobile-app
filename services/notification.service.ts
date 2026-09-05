@@ -1,15 +1,7 @@
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
-import { Platform, Alert } from "react-native";
+import { Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-  }),
-});
 
 export async function registerForPushNotifications() {
   if (!Device.isDevice) {
@@ -18,27 +10,21 @@ export async function registerForPushNotifications() {
   }
 
   try {
-    const { status: existingStatus } =
-      await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
+    const permissions = (await Notifications.getPermissionsAsync()) as any;
 
-    if (existingStatus !== "granted") {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
-    }
-
-    if (finalStatus !== "granted") {
-      Alert.alert("Permission Denied", "Push notifications are disabled");
-      return null;
+    if (!permissions.granted) {
+      const requested = (await Notifications.requestPermissionsAsync()) as any;
+      if (!requested.granted) {
+        Alert.alert("Permission Denied", "Push notifications are disabled");
+        return null;
+      }
     }
 
     const token = (await Notifications.getExpoPushTokenAsync()).data;
     await AsyncStorage.setItem("pushToken", token);
-    Alert.alert("Success", "Push notifications enabled! ✅");
     return token;
   } catch (error) {
     console.error("Push notification error:", error);
-    Alert.alert("Error", "Failed to setup push notifications");
     return null;
   }
 }
@@ -63,6 +49,7 @@ export async function scheduleDueDateReminder(
           priority: "high",
         },
         trigger: {
+          type: Notifications.SchedulableTriggerInputTypes.DATE,
           date: reminderDate,
         },
       });
@@ -81,6 +68,7 @@ export async function scheduleDueDateReminder(
           priority: "high",
         },
         trigger: {
+          type: Notifications.SchedulableTriggerInputTypes.DATE,
           date: overdueDate,
         },
       });

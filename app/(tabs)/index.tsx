@@ -115,7 +115,10 @@ export default function HomeScreen() {
             <Text style={styles.greeting}>{greeting()} 👋</Text>
             <Text style={styles.userName}>{user?.name || "Student"}</Text>
           </View>
-          <TouchableOpacity style={styles.notificationBtn}>
+          <TouchableOpacity
+            style={styles.notificationBtn}
+            onPress={() => router.push("/notification")}
+          >
             <BlurView intensity={20} tint="light" style={styles.blurCircle}>
               <Ionicons
                 name="notifications-outline"

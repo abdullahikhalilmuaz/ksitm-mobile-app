@@ -15,6 +15,7 @@ import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTheme } from "../../context/ThemeContext";
 import { registerForPushNotifications } from "../../services/notification.service";
+import Animated, { FadeInUp } from "react-native-reanimated";
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -65,17 +66,31 @@ export default function SettingsScreen() {
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}
     >
+      {/* Back Button */}
+      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+        <Ionicons
+          name="arrow-back"
+          size={24}
+          color={isDark ? "#F5F3FF" : "#1A1A2E"}
+        />
+      </TouchableOpacity>
+
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
         {/* Header */}
         <View style={styles.header}>
-          <Text style={[styles.title, { color: colors.text }]}>Settings</Text>
+          <Text style={[styles.title, { color: colors.text }]}>
+            ⚙️ Settings
+          </Text>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+            Manage your app preferences
+          </Text>
         </View>
 
         {/* Account */}
-        <View style={styles.section}>
+        <Animated.View entering={FadeInUp.delay(100)} style={styles.section}>
           <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
             Account
           </Text>
@@ -85,12 +100,7 @@ export default function SettingsScreen() {
             style={[styles.card, { borderColor: colors.border }]}
           >
             <View style={styles.accountRow}>
-              <View
-                style={[
-                  styles.avatar,
-                  { backgroundColor: isDark ? "#4B2E83" : "#4B2E83" },
-                ]}
-              >
+              <View style={[styles.avatar, { backgroundColor: "#4B2E83" }]}>
                 <Text style={styles.avatarText}>
                   {user?.name?.charAt(0)?.toUpperCase() || "U"}
                 </Text>
@@ -105,12 +115,18 @@ export default function SettingsScreen() {
                   {user?.email}
                 </Text>
               </View>
+              <TouchableOpacity
+                style={styles.editButton}
+                onPress={() => Alert.alert("Edit Profile", "Coming soon!")}
+              >
+                <Text style={styles.editButtonText}>Edit</Text>
+              </TouchableOpacity>
             </View>
           </BlurView>
-        </View>
+        </Animated.View>
 
         {/* Preferences */}
-        <View style={styles.section}>
+        <Animated.View entering={FadeInUp.delay(200)} style={styles.section}>
           <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
             Preferences
           </Text>
@@ -123,12 +139,22 @@ export default function SettingsScreen() {
               <View style={styles.toggleLabel}>
                 <Ionicons
                   name={isDark ? "moon" : "moon-outline"}
-                  size={20}
+                  size={22}
                   color="#4B2E83"
                 />
-                <Text style={[styles.toggleText, { color: colors.text }]}>
-                  Dark Mode
-                </Text>
+                <View>
+                  <Text style={[styles.toggleText, { color: colors.text }]}>
+                    Dark Mode
+                  </Text>
+                  <Text
+                    style={[
+                      styles.toggleSubtext,
+                      { color: colors.textSecondary },
+                    ]}
+                  >
+                    {isDark ? "Enabled" : "Disabled"}
+                  </Text>
+                </View>
               </View>
               <Switch
                 value={isDark}
@@ -143,12 +169,22 @@ export default function SettingsScreen() {
                   name={
                     notifications ? "notifications" : "notifications-outline"
                   }
-                  size={20}
+                  size={22}
                   color="#4B2E83"
                 />
-                <Text style={[styles.toggleText, { color: colors.text }]}>
-                  Push Notifications
-                </Text>
+                <View>
+                  <Text style={[styles.toggleText, { color: colors.text }]}>
+                    Push Notifications
+                  </Text>
+                  <Text
+                    style={[
+                      styles.toggleSubtext,
+                      { color: colors.textSecondary },
+                    ]}
+                  >
+                    {notifications ? "On" : "Off"}
+                  </Text>
+                </View>
               </View>
               <Switch
                 value={notifications}
@@ -158,10 +194,10 @@ export default function SettingsScreen() {
               />
             </View>
           </BlurView>
-        </View>
+        </Animated.View>
 
-        {/* Library Card */}
-        <View style={styles.section}>
+        {/* Library */}
+        <Animated.View entering={FadeInUp.delay(300)} style={styles.section}>
           <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
             Library
           </Text>
@@ -185,7 +221,10 @@ export default function SettingsScreen() {
                 style={styles.menuArrow}
               />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem}>
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => router.push("/history")}
+            >
               <Ionicons name="book-outline" size={20} color="#4B2E83" />
               <Text style={[styles.menuText, { color: colors.text }]}>
                 Borrowing History
@@ -198,7 +237,54 @@ export default function SettingsScreen() {
               />
             </TouchableOpacity>
           </BlurView>
-        </View>
+        </Animated.View>
+
+        {/* Support */}
+        <Animated.View entering={FadeInUp.delay(400)} style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
+            Support
+          </Text>
+          <BlurView
+            intensity={isDark ? 40 : 30}
+            tint={colors.blur}
+            style={[styles.card, { borderColor: colors.border }]}
+          >
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => Alert.alert("Help Center", "Coming soon!")}
+            >
+              <Ionicons name="help-circle-outline" size={20} color="#4B2E83" />
+              <Text style={[styles.menuText, { color: colors.text }]}>
+                Help Center
+              </Text>
+              <Ionicons
+                name="chevron-forward"
+                size={20}
+                color="#D1D5DB"
+                style={styles.menuArrow}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => Alert.alert("About", "KSITM Library v1.0.0")}
+            >
+              <Ionicons
+                name="information-circle-outline"
+                size={20}
+                color="#4B2E83"
+              />
+              <Text style={[styles.menuText, { color: colors.text }]}>
+                About
+              </Text>
+              <Ionicons
+                name="chevron-forward"
+                size={20}
+                color="#D1D5DB"
+                style={styles.menuArrow}
+              />
+            </TouchableOpacity>
+          </BlurView>
+        </Animated.View>
 
         {/* Logout */}
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
@@ -218,14 +304,35 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  backButton: {
+    position: "absolute",
+    top: 50,
+    left: 16,
+    zIndex: 10,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "rgba(255,255,255,0.8)",
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
   header: {
     paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 12,
+    paddingTop: 60,
+    paddingBottom: 16,
   },
   title: {
-    fontSize: 26,
+    fontSize: 28,
     fontWeight: "700",
+  },
+  subtitle: {
+    fontSize: 14,
+    marginTop: 2,
   },
   scrollContent: {
     paddingHorizontal: 20,
@@ -277,6 +384,17 @@ const styles = StyleSheet.create({
   accountEmail: {
     fontSize: 13,
   },
+  editButton: {
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 8,
+    backgroundColor: "#EDE9FE",
+  },
+  editButtonText: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#4B2E83",
+  },
   menuItem: {
     flexDirection: "row",
     alignItems: "center",
@@ -305,10 +423,14 @@ const styles = StyleSheet.create({
   toggleLabel: {
     flexDirection: "row",
     alignItems: "center",
+    gap: 12,
   },
   toggleText: {
     fontSize: 15,
-    marginLeft: 12,
+    fontWeight: "500",
+  },
+  toggleSubtext: {
+    fontSize: 11,
   },
   logoutButton: {
     flexDirection: "row",

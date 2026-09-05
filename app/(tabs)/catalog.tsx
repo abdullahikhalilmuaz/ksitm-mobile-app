@@ -10,10 +10,12 @@ import {
   RefreshControl,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { BlurView } from "expo-blur";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import Animated, { FadeInUp, FadeInDown } from "react-native-reanimated";
 
 const API_URL = "https://ksitm-backend-api.onrender.com/api";
 
@@ -71,13 +73,20 @@ export default function CatalogScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Back Button */}
+      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+        <Ionicons name="arrow-back" size={24} color="#1A1A2E" />
+      </TouchableOpacity>
+
+      {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>Search Books</Text>
+        <Text style={styles.title}>📚 Search</Text>
         <Text style={styles.subtitle}>
           {filteredBooks.length} books available
         </Text>
       </View>
 
+      {/* Search Bar */}
       <View style={styles.searchContainer}>
         <Ionicons
           name="search"
@@ -87,7 +96,7 @@ export default function CatalogScreen() {
         />
         <TextInput
           style={styles.searchInput}
-          placeholder="Search by title, author, ISBN..."
+          placeholder="Search by title, author..."
           placeholderTextColor="#9CA3AF"
           value={search}
           onChangeText={setSearch}
@@ -118,45 +127,56 @@ export default function CatalogScreen() {
           contentContainerStyle={styles.scrollContent}
         >
           {filteredBooks.length === 0 ? (
-            <View style={styles.emptyState}>
-              <Ionicons name="book-outline" size={56} color="#D1D5DB" />
+            <Animated.View entering={FadeInUp} style={styles.emptyState}>
+              <Ionicons name="book-outline" size={64} color="#D1D5DB" />
               <Text style={styles.emptyTitle}>No books found</Text>
-              <Text style={styles.emptySubtext}>
-                Try adjusting your search terms
-              </Text>
-            </View>
+              <Text style={styles.emptySubtext}>Try adjusting your search</Text>
+            </Animated.View>
           ) : (
-            filteredBooks.map((book: any) => (
-              <TouchableOpacity
+            filteredBooks.map((book: any, index) => (
+              <Animated.View
                 key={book._id}
-                style={styles.bookCard}
-                onPress={() => handleBookPress(book._id)}
-                activeOpacity={0.7}
+                entering={FadeInUp.delay(index * 50)}
               >
-                <View style={styles.bookCardContent}>
-                  <View style={styles.bookIcon}>
-                    <Text style={styles.bookEmoji}>📚</Text>
-                  </View>
-                  <View style={styles.bookInfo}>
-                    <Text style={styles.bookTitle} numberOfLines={1}>
-                      {book.title}
-                    </Text>
-                    <Text style={styles.bookAuthor} numberOfLines={1}>
-                      {book.author}
-                    </Text>
-                    <View style={styles.bookMeta}>
-                      <Text style={styles.bookCategory}>
-                        {book.category?.name || "General"}
-                      </Text>
-                      <View style={styles.dot} />
-                      <Text style={styles.bookCopies}>
-                        {book.availableCopies} of {book.totalCopies} available
-                      </Text>
+                <TouchableOpacity
+                  style={styles.bookCard}
+                  onPress={() => handleBookPress(book._id)}
+                  activeOpacity={0.7}
+                >
+                  <BlurView intensity={30} tint="light" style={styles.bookBlur}>
+                    <View style={styles.bookCardContent}>
+                      <View style={styles.bookIcon}>
+                        <Text style={styles.bookEmoji}>📖</Text>
+                      </View>
+                      <View style={styles.bookInfo}>
+                        <Text style={styles.bookTitle} numberOfLines={1}>
+                          {book.title}
+                        </Text>
+                        <Text style={styles.bookAuthor} numberOfLines={1}>
+                          {book.author}
+                        </Text>
+                        <View style={styles.bookMeta}>
+                          <View style={styles.categoryBadge}>
+                            <Text style={styles.categoryText}>
+                              {book.category?.name || "General"}
+                            </Text>
+                          </View>
+                          <View style={styles.dot} />
+                          <Text style={styles.bookCopies}>
+                            {book.availableCopies} of {book.totalCopies}{" "}
+                            available
+                          </Text>
+                        </View>
+                      </View>
+                      <Ionicons
+                        name="chevron-forward"
+                        size={20}
+                        color="#D1D5DB"
+                      />
                     </View>
-                  </View>
-                  <Ionicons name="chevron-forward" size={20} color="#D1D5DB" />
-                </View>
-              </TouchableOpacity>
+                  </BlurView>
+                </TouchableOpacity>
+              </Animated.View>
             ))
           )}
         </ScrollView>
@@ -170,13 +190,30 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F5F3FF",
   },
+  backButton: {
+    position: "absolute",
+    top: 50,
+    left: 16,
+    zIndex: 10,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "rgba(255,255,255,0.8)",
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
   header: {
     paddingHorizontal: 20,
-    paddingTop: 16,
+    paddingTop: 60,
     paddingBottom: 12,
   },
   title: {
-    fontSize: 26,
+    fontSize: 28,
     fontWeight: "700",
     color: "#1A1A2E",
   },
@@ -188,14 +225,19 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#FFFFFF",
     marginHorizontal: 20,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderRadius: 12,
+    borderRadius: 16,
+    backgroundColor: "rgba(255,255,255,0.6)",
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: "rgba(255,255,255,0.3)",
     marginBottom: 16,
+    shadowColor: "#4B2E83",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
   },
   searchIcon: {
     marginRight: 10,
@@ -210,37 +252,39 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
   },
   bookCard: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 14,
-    padding: 14,
     marginBottom: 12,
-    shadowColor: "#4B2E83",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 6,
-    elevation: 2,
+    borderRadius: 16,
+    overflow: "hidden",
+  },
+  bookBlur: {
+    padding: 16,
+    borderRadius: 16,
+    overflow: "hidden",
+    backgroundColor: "rgba(255,255,255,0.5)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.2)",
   },
   bookCardContent: {
     flexDirection: "row",
     alignItems: "center",
   },
   bookIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
+    width: 52,
+    height: 52,
+    borderRadius: 14,
     backgroundColor: "#F5F3FF",
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 12,
+    marginRight: 14,
   },
   bookEmoji: {
-    fontSize: 22,
+    fontSize: 24,
   },
   bookInfo: {
     flex: 1,
   },
   bookTitle: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: "600",
     color: "#1A1A2E",
   },
@@ -254,13 +298,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 4,
   },
-  bookCategory: {
-    fontSize: 11,
-    color: "#4B2E83",
+  categoryBadge: {
     backgroundColor: "#EDE9FE",
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  categoryText: {
+    fontSize: 10,
+    fontWeight: "600",
+    color: "#4B2E83",
   },
   dot: {
     width: 3,
