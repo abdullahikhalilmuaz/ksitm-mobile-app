@@ -4,7 +4,7 @@
     "slug": "myUmyu",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/favicon.webp",
+    "icon": "./assets/images/fav.png",
     "scheme": "ksitm-library-app",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -24,14 +24,14 @@
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/favicon.webp"
+      "favicon": "./assets/images/fav.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/favicon.webp",
+          "image": "./assets/images/fav.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
