@@ -17,7 +17,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
 // API URL - CHANGE THIS TO YOUR BACKEND IP
-const API_URL = "http://localhost:5000/api";
+const API_URL = "https://ksitm-backend-api.onrender.com/api";
 
 export default function LoginScreen() {
   const router = useRouter();

@@ -12,7 +12,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { BlurView } from "expo-blur";
 
-const API_URL = "http://localhost:5000/api";
+const API_URL = "https://ksitm-backend-api.onrender.com/api";
 
 export default function HistoryScreen() {
   const [loans, setLoans] = useState([]);
@@ -30,7 +30,9 @@ export default function HistoryScreen() {
       const res = await axios.get(`${API_URL}/loans/my-loans`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const returned = res.data.data.filter((loan: any) => loan.status === "returned");
+      const returned = res.data.data.filter(
+        (loan: any) => loan.status === "returned",
+      );
       setLoans(returned);
     } catch (error) {
       console.error(error);
@@ -55,7 +57,11 @@ export default function HistoryScreen() {
       <ScrollView
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#4B2E83" />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#4B2E83"
+          />
         }
         contentContainerStyle={styles.scrollContent}
       >
@@ -63,11 +69,18 @@ export default function HistoryScreen() {
           <View style={styles.emptyState}>
             <Ionicons name="book-outline" size={56} color="#D1D5DB" />
             <Text style={styles.emptyTitle}>No history</Text>
-            <Text style={styles.emptySubtext}>Books you return will appear here</Text>
+            <Text style={styles.emptySubtext}>
+              Books you return will appear here
+            </Text>
           </View>
         ) : (
           loans.map((loan: any) => (
-            <BlurView key={loan._id} intensity={30} tint="light" style={styles.card}>
+            <BlurView
+              key={loan._id}
+              intensity={30}
+              tint="light"
+              style={styles.card}
+            >
               <View style={styles.cardContent}>
                 <View style={styles.bookIcon}>
                   <Text style={styles.bookEmoji}>✅</Text>
@@ -76,9 +89,16 @@ export default function HistoryScreen() {
                   <Text style={styles.bookTitle}>{loan.book?.title}</Text>
                   <Text style={styles.bookAuthor}>{loan.book?.author}</Text>
                   <View style={styles.metaRow}>
-                    <Ionicons name="calendar-outline" size={14} color="#6B7280" />
+                    <Ionicons
+                      name="calendar-outline"
+                      size={14}
+                      color="#6B7280"
+                    />
                     <Text style={styles.metaText}>
-                      Returned: {loan.returnDate ? new Date(loan.returnDate).toLocaleDateString() : "—"}
+                      Returned:{" "}
+                      {loan.returnDate
+                        ? new Date(loan.returnDate).toLocaleDateString()
+                        : "—"}
                     </Text>
                   </View>
                 </View>

@@ -16,7 +16,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 
-const API_URL = "http://localhost:5000/api";
+const API_URL = "https://ksitm-backend-api.onrender.com/api";
 const { width } = Dimensions.get("window");
 
 export default function HomeScreen() {
