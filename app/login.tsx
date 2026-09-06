@@ -16,7 +16,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
-// API URL - CHANGE THIS TO YOUR BACKEND IP
 const API_URL = "https://ksitm-backend-api.onrender.com/api";
 
 export default function LoginScreen() {
@@ -25,6 +24,7 @@ export default function LoginScreen() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -41,9 +41,12 @@ export default function LoginScreen() {
       });
 
       if (response.data.success) {
-        // Store token and user
         await AsyncStorage.setItem("token", response.data.token);
         await AsyncStorage.setItem("user", JSON.stringify(response.data.user));
+
+        if (rememberMe) {
+          await AsyncStorage.setItem("rememberMe", "true");
+        }
 
         Alert.alert("Success", `Welcome ${response.data.user.name}!`);
         router.replace("/(tabs)");
@@ -51,10 +54,8 @@ export default function LoginScreen() {
         Alert.alert("Login Failed", "Invalid credentials");
       }
     } catch (error: any) {
-      Alert.alert(
-        "Login Failed",
-        error.response?.data?.message || "Something went wrong",
-      );
+      const errorMsg = error.response?.data?.message || "Something went wrong";
+      Alert.alert("Login Failed", errorMsg);
     } finally {
       setLoading(false);
     }
@@ -109,8 +110,16 @@ export default function LoginScreen() {
             </View>
 
             <View style={styles.optionsRow}>
-              <TouchableOpacity style={styles.rememberMe}>
-                <View style={styles.checkbox} />
+              <TouchableOpacity
+                style={styles.rememberMe}
+                onPress={() => setRememberMe(!rememberMe)}
+              >
+                <View
+                  style={[
+                    styles.checkbox,
+                    rememberMe && styles.checkboxChecked,
+                  ]}
+                />
                 <Text style={styles.rememberText}>Remember me</Text>
               </TouchableOpacity>
               <TouchableOpacity>
@@ -233,6 +242,9 @@ const styles = StyleSheet.create({
     borderColor: "#4B2E83",
     borderRadius: 4,
     marginRight: 8,
+  },
+  checkboxChecked: {
+    backgroundColor: "#4B2E83",
   },
   rememberText: {
     color: "#6B7280",

@@ -14,13 +14,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
-// API URL - CHANGE THIS TO YOUR BACKEND IP
-const API_URL = "https://ksitm-backend-api.onrender.com/api"; // Android Emulator
+const API_URL = "https://ksitm-backend-api.onrender.com/api";
 
 export default function RegisterScreen() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [name, setName] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -28,15 +29,10 @@ export default function RegisterScreen() {
   const [level, setLevel] = useState("100");
 
   const handleRegister = async () => {
-    console.log("Register pressed!");
-    console.log("Name:", name);
-    console.log("Email:", email);
-    console.log("Password:", password);
-    console.log("Confirm:", confirmPassword);
-    console.log("Department:", department);
-    console.log("Level:", level);
+    setErrorMessage("");
+    console.log("REGISTER CLICKED");
 
-    if (!name || !email || !password || !confirmPassword) {
+    if (!firstName || !lastName || !email || !password || !confirmPassword) {
       Alert.alert("Error", "Please fill in all required fields");
       return;
     }
@@ -55,7 +51,8 @@ export default function RegisterScreen() {
 
     try {
       const response = await axios.post(`${API_URL}/auth/register`, {
-        name,
+        firstName,
+        lastName,
         email,
         password,
         department,
@@ -63,26 +60,36 @@ export default function RegisterScreen() {
         role: "student",
       });
 
-      console.log("Response:", response.data);
+      console.log("REGISTER RESPONSE:", response.data);
 
       if (response.data.success) {
         await AsyncStorage.setItem("token", response.data.token);
         await AsyncStorage.setItem("user", JSON.stringify(response.data.user));
 
+        // Show success alert and then navigate to home
         Alert.alert(
           "Success! 🎉",
-          "Your account has been created. Welcome to KSITM Library!",
-          [{ text: "OK", onPress: () => router.replace("/(tabs)") }],
+          `Welcome ${response.data.user.firstName}! Your account has been created.`,
+          [
+            {
+              text: "Continue",
+              onPress: () => router.replace("/(tabs)"),
+            },
+          ],
         );
       } else {
         Alert.alert("Registration Failed", "Something went wrong");
       }
     } catch (error: any) {
-      console.log("Error:", error);
-      Alert.alert(
-        "Registration Failed",
-        error.response?.data?.message || "Something went wrong",
-      );
+      console.log("REGISTER ERROR:", error.response?.data);
+
+      const errorMsg =
+        error.response?.data?.message ||
+        error.response?.data?.errors?.[0]?.msg ||
+        "Something went wrong";
+
+      setErrorMessage(errorMsg);
+      Alert.alert("Registration Failed", errorMsg);
     } finally {
       setLoading(false);
     }
@@ -97,14 +104,29 @@ export default function RegisterScreen() {
         </View>
 
         <View style={styles.form}>
+          {errorMessage ? (
+            <Text style={styles.errorText}>❌ {errorMessage}</Text>
+          ) : null}
+
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Full Name *</Text>
+            <Text style={styles.label}>First Name *</Text>
             <TextInput
               style={styles.input}
-              placeholder="John Doe"
+              placeholder="John"
               placeholderTextColor="#9CA3AF"
-              value={name}
-              onChangeText={(text) => setName(text)}
+              value={firstName}
+              onChangeText={(text) => setFirstName(text)}
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Last Name *</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Doe"
+              placeholderTextColor="#9CA3AF"
+              value={lastName}
+              onChangeText={(text) => setLastName(text)}
             />
           </View>
 
@@ -234,6 +256,12 @@ const styles = StyleSheet.create({
   },
   form: {
     flex: 1,
+  },
+  errorText: {
+    color: "#DC2626",
+    fontSize: 14,
+    marginBottom: 12,
+    textAlign: "center",
   },
   inputGroup: {
     marginBottom: 18,
