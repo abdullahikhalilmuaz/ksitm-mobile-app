@@ -15,7 +15,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import QRCode from "react-native-qrcode-svg";
 
-const API_URL = "http://localhost:5000/api";
+const API_URL = "https://ksitm-backend-api.onrender.com/api";
 
 export default function ProfileScreen() {
   const router = useRouter();
